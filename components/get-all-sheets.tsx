@@ -2,35 +2,28 @@
 
 import { useState } from 'react'
 
-export default function GetAllSheetsButton() {
+export default function GetAllSheetsButton({
+  pages,
+  domainFilter,
+  languageFilter
+}: {
+  pages: any[]
+  domainFilter: string
+  languageFilter: string
+}) {
   const [sheets, setSheets] = useState<{ id: string; name: string }[]>([])
   const [selectedSheetId, setSelectedSheetId] = useState('')
 
-    // 🔹 Dummy published pages from HubSpot
-  const dummyPages = [
-    {
-      id: '123',
-      name: 'Welcome to Our Website',
-      slug: '/welcome',
-      language: 'en',
-      domain: 'example.com',
-    },
-    {
-      id: '456',
-      name: 'About Us',
-      slug: '/about',
-      language: 'en',
-      domain: 'example.com',
-    },
-    {
-      id: '789',
-      name: 'Página de Inicio',
-      slug: '/inicio',
-      language: 'es',
-      domain: 'example.es',
-    },
-  ]
-  
+  // 🔹 Apply filters passed from parent
+  const filteredPages = pages.filter(
+    (page) =>
+      (page.domain === domainFilter || domainFilter === '') &&
+      (page.language === languageFilter || languageFilter === '')
+  )
+
+  console.log("umar filteredPages", filteredPages);
+  console.log("umar domainFilter", domainFilter);
+  console.log("umar lanugageFilter", languageFilter);
   const getSheets = async () => {
     try {
       const res = await fetch('/api/google/sheets')
@@ -53,12 +46,26 @@ export default function GetAllSheetsButton() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sheetId: selectedSheetId,
-        pages: dummyPages
+        pages: filteredPages,
+        domainFilter,
+        languageFilter
       })
     })
 
     const data = await res.json()
     console.log('✅ Import Response:', data)
+
+  //   await fetch('/api/google/sync-sheets', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({
+  //     sheetId: selectedSheetId,
+  //     pages: filteredPages,
+  //     domainFilter,
+  //     languageFilter
+  //   })
+  // })
+
   }
 
 
@@ -79,7 +86,7 @@ export default function GetAllSheetsButton() {
             onChange={(e) => setSelectedSheetId(e.target.value)}
           >
             <option value="">-- Select Sheet to import data --</option>
-            {sheets.map(sheet => (
+            {sheets.map((sheet) => (
               <option key={sheet.id} value={sheet.id}>
                 {sheet.name}
               </option>
@@ -88,11 +95,7 @@ export default function GetAllSheetsButton() {
 
           {selectedSheetId && (
             <button
-              onClick={() => {
-                handleImport()
-                console.log('🛠️ Import button clicked for sheet:', selectedSheetId)
-                // No action yet
-              }}
+              onClick={handleImport}
               className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
             >
               Import Selected Sheet

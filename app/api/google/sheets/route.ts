@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { randomUUID } from 'crypto'
 
 export async function GET (req: NextRequest) {
   const supabase = await createClient()
@@ -56,12 +57,7 @@ export async function POST (req: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { sheetId, pages } = await req.json()
-
-  // if (!sheetId || !Array.isArray(pages)) {
-  //   return NextResponse.json({ error: 'Missing sheetId or pages' }, { status: 400 })
-  // }
-
+  const { sheetId, pages, domainFilter, languageFilter } = await req.json()
   const { data: tokenRow } = await supabase
     .from('google_tokens')
     .select('access_token')
@@ -77,41 +73,53 @@ export async function POST (req: NextRequest) {
     )
   }
 
-  // const token = tokenRow.access_token
-  const newSheetTitle = `Import_${new Date().toISOString().slice(0, 10)}`
+  const token = tokenRow.access_token
+  const sheetName = `Import_${new Date().toISOString().slice(0, 10)}`
 
-  // 1. Create a new sheet tab
-  const createSheetRes = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+  // 🔍 Step 1: Get existing sheets to see if this tab already exists
+  const metadataRes = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
     {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${tokenRow.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        requests: [
-          {
-            addSheet: {
-              properties: { title: newSheetTitle }
-            }
-          }
-        ]
-      })
+      headers: { Authorization: `Bearer ${token}` }
     }
   )
 
-  const createSheetData = await createSheetRes.json()
-  const sheetName = newSheetTitle
+  const metadata = await metadataRes.json()
+  const tabExists = metadata.sheets?.some(
+    (sheet: any) => sheet.properties.title === sheetName
+  )
 
-  // 2. Prepare rows
+  // 🧩 Step 2: If tab doesn't exist, create it
+  if (!tabExists) {
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          requests: [
+            {
+              addSheet: {
+                properties: { title: sheetName }
+              }
+            }
+          ]
+        })
+      }
+    )
+  }
+
+  // ✅ Step 3: Format data
   const headers = ['ID', 'Title', 'Slug', 'Language', 'Domain']
   const values = [
-    headers,
+    ...(tabExists ? [] : [headers]), // only add headers if tab is new
     ...pages.map(p => [p.id, p.name, p.slug, p.language, p.domain])
   ]
 
-  // 3. Write data to new sheet tab
+  // 📝 Step 4: Write to the sheet tab
   const updateRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
       sheetName
@@ -119,7 +127,7 @@ export async function POST (req: NextRequest) {
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${tokenRow.access_token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ values })
@@ -128,19 +136,27 @@ export async function POST (req: NextRequest) {
 
   const updateData = await updateRes.json()
 
+  // ✅ Step 5: Store sync session in Supabase
   const { error: syncError } = await supabase.from('sync_sessions').insert([
     {
       user_id: user.id,
       sheet_id: sheetId,
       tab_name: sheetName,
-      content_type: 'pages', // hardcoded for now
-      filters_used: null, // update if you apply filters
+      content_type: 'pages',
+      filters_used: JSON.stringify({
+        domain: domainFilter,
+        language: languageFilter
+      }),
       timestamp: new Date().toISOString()
     }
   ])
 
   if (syncError) {
     console.error('❌ Failed to log sync session:', syncError)
+    return NextResponse.json(
+      { error: 'Failed to store sync metadata', details: syncError.message },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ success: true, updateData })
