@@ -52,21 +52,24 @@ export async function GET (req: NextRequest) {
     }
 
     // ✅ Save to Supabase
-    const { error: insertError } = await supabase.from('google_tokens').insert([
-      {
-        user_email: user.email,
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        expires_in: tokenData.expires_in,
-        token_type: tokenData.token_type,
-        created_at: new Date().toISOString()
-      }
-    ])
+    const { error: upsertError } = await supabase.from('google_tokens').upsert(
+      [
+        {
+          user_email: user.email,
+          access_token: tokenData.access_token,
+          refresh_token: tokenData.refresh_token,
+          expires_in: tokenData.expires_in,
+          token_type: tokenData.token_type,
+          created_at: new Date().toISOString()
+        }
+      ],
+      { onConflict: 'user_email' } // 👈 ensure this column is UNIQUE in Supabase
+    )
 
-    if (insertError) {
-      console.error('Supabase insert error:', insertError)
+    if (upsertError) {
+      console.error('Supabase upsert error:', upsertError)
       return NextResponse.json(
-        { error: 'Failed to store token', details: insertError.message }, // 👈 show actual message
+        { error: 'Failed to store token', details: upsertError.message },
         { status: 500 }
       )
     }

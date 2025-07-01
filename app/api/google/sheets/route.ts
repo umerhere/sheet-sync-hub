@@ -23,12 +23,12 @@ export async function GET (req: NextRequest) {
 
   console.log('data from google_tokens', tokenRow)
   console.log('error from google_tokens', error)
-  // if (error || !tokenRow) {
-  //   return NextResponse.json(
-  //     { error: 'No Google token found' },
-  //     { status: 404 }
-  //   )
-  // }
+  if (error || !tokenRow) {
+    return NextResponse.json(
+      { error: 'No Google token found' },
+      { status: 404 }
+    )
+  }
 
   const googleRes = await fetch(
     `https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name)`,

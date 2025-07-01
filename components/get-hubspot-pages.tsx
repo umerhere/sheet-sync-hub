@@ -8,9 +8,10 @@ export default function GetHubspotPages() {
   const fetchPages = async () => {
   const res = await fetch('/api/hubspot/pages')
   const data = await res.json()
+    console.log("umar API response", data);
 
   if (res.ok) {
-    const enrichedPages = (data.results || []).map((page: any) => ({
+    const enrichedPages = (data.pages || []).map((page: any) => ({
       id: page.id,
       name: page.name,
       slug: page.slug || '',
@@ -25,9 +26,10 @@ export default function GetHubspotPages() {
   }
 }
 
-useEffect(() => {
-  fetchPages()
-}, [])
+// useEffect(() => {
+//   fetchPages()
+// }, [])
+
   return (
     <div className="space-y-4 mt-6">
       <button
@@ -40,7 +42,7 @@ useEffect(() => {
      {pages.length > 0 && (
   <table className="table-auto w-full border mt-4 text-sm">
     <thead>
-      <tr className="bg-gray-100 text-left">
+      <tr className=" text-left">
         <th className="p-2 border">Name</th>
         <th className="p-2 border">Slug</th>
         <th className="p-2 border">Domain</th>

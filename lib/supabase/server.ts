@@ -1,4 +1,3 @@
-// lib/supabase/server.ts
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -10,9 +9,10 @@ export async function createClient () {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll: () => cookieStore.getAll(),
+        getAll: () =>
+          cookieStore.getAll().map(({ name, value }) => ({ name, value })),
         setAll: () => {
-          // Optional: Skip in server component
+          // Optional
         }
       }
     }
