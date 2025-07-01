@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 
 export default function GetHubspotPages() {
   const [pages, setPages] = useState([])
+const [domainFilter, setDomainFilter] = useState('')
+const [languageFilter, setLanguageFilter] = useState('')
 
   const fetchPages = async () => {
   const res = await fetch('/api/hubspot/pages')
@@ -26,6 +28,12 @@ export default function GetHubspotPages() {
   }
 }
 
+const filteredPages = pages.filter(
+  (page) =>
+    (domainFilter === '' || page.domain === domainFilter) &&
+    (languageFilter === '' || page.language === languageFilter)
+)
+
 // useEffect(() => {
 //   fetchPages()
 // }, [])
@@ -39,7 +47,32 @@ export default function GetHubspotPages() {
         Fetch HubSpot Pages
       </button>
 
-     {pages.length > 0 && (
+<div className="flex gap-4 my-2">
+  <select
+    value={domainFilter}
+    onChange={(e) => setDomainFilter(e.target.value)}
+    className="border p-2 rounded"
+  >
+    <option value="">All Domains</option>
+    {[...new Set(pages.map((p) => p.domain))].map((domain) => (
+      <option key={domain} value={domain}>{domain}</option>
+    ))}
+  </select>
+
+  <select
+    value={languageFilter}
+    onChange={(e) => setLanguageFilter(e.target.value)}
+    className="border p-2 rounded"
+  >
+    <option value="">All Languages</option>
+    {[...new Set(pages.map((p) => p.language || ''))].map((lang) => (
+      <option key={lang} value={lang}>{lang || 'Unknown'}</option>
+    ))}
+  </select>
+</div>
+
+
+     {filteredPages.length > 0 && (
   <table className="table-auto w-full border mt-4 text-sm">
     <thead>
       <tr className=" text-left">
@@ -50,15 +83,16 @@ export default function GetHubspotPages() {
       </tr>
     </thead>
     <tbody>
-      {pages.map((page: any) => (
-        <tr key={page.id}>
-          <td className="p-2 border">{page.name}</td>
-          <td className="p-2 border">{page.slug || page.url}</td>
-          <td className="p-2 border">{page.domain}</td>
-          <td className="p-2 border">{page.language}</td>
-        </tr>
-      ))}
-    </tbody>
+  {filteredPages.map((page: any) => (
+    <tr key={page.id}>
+      <td className="p-2 border">{page.name || '—'}</td>
+      <td className="p-2 border">{page.slug || page.url || '—'}</td>
+      <td className="p-2 border">{page.domain || '—'}</td>
+      <td className="p-2 border">{page.language || '—'}</td>
+    </tr>
+  ))}
+</tbody>
+
   </table>
 )}
 
