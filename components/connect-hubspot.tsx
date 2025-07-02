@@ -42,7 +42,7 @@ export default function ConnectHubSpotButton() {
   const hasChanged = token && token !== initialToken
 
   return (
-    <div className='space-y-4 border rounded p-4 mt-6 max-w-md bg-gray-50'>
+    <div className='space-y-4 '>
       <h2 className='text-lg font-semibold'>🔌 Connect HubSpot</h2>
 
       <input

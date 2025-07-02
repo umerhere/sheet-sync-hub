@@ -123,7 +123,7 @@ export default function GetAllSheetsButton({
             ))}
           </select>
 
-          {selectedSheetId && (
+          {pages.length > 0 && selectedSheetId && (
             <button
               onClick={handleImport}
               className={`px-4 py-2 rounded text-white ${!loadingImports ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-600' }`}

@@ -1,4 +1,7 @@
-'use client'
+'use client';
+
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function GetHubspotPages({
   pages,
@@ -8,45 +11,60 @@ export default function GetHubspotPages({
   languageFilter,
   setLanguageFilter,
 }: {
-  pages: any[]
-  setPages: (pages: any[]) => void
-  domainFilter: string
-  setDomainFilter: (val: string) => void
-  languageFilter: string
-  setLanguageFilter: (val: string) => void
+  pages: any[];
+  setPages: (pages: any[]) => void;
+  domainFilter: string;
+  setDomainFilter: (val: string) => void;
+  languageFilter: string;
+  setLanguageFilter: (val: string) => void;
 }) {
-  const fetchPages = async () => {
-    const res = await fetch('/api/hubspot/pages')
-    const data = await res.json()
+  const [loading, setLoading] = useState(false);
 
-    if (res.ok) {
-      const enrichedPages = (data.pages || []).map((page: any) => ({
-        id: page.id,
-        name: page.name || '',
-        slug: page.slug || '',
-        url: page.url || '',
-        domain: page.url ? new URL(page.url).hostname : '',
-        language: page.language || '',
-      }))
-      setPages(enrichedPages)
-    } else {
-      console.error('❌ Error:', data.error || data.details)
+  const fetchPages = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/hubspot/pages');
+      const data = await res.json();
+
+      if (res.ok) {
+        const enrichedPages = (data.pages || []).map((page: any) => ({
+          id: page.id,
+          name: page.name || '',
+          slug: page.slug || '',
+          url: page.url || '',
+          domain: page.url ? new URL(page.url).hostname : '',
+          language: page.language || '',
+        }));
+        setPages(enrichedPages);
+        toast.success('✅ Fetched HubSpot pages successfully');
+      } else {
+        console.error('❌ Error:', data.error || data.details);
+        toast.error(data.error || 'Failed to fetch pages');
+      }
+    } catch (err) {
+      console.error('❌ Unexpected Error:', err);
+      toast.error('Unexpected error occurred');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const filteredPages = pages.filter(
     (page) =>
       (domainFilter === '' || page.domain === domainFilter) &&
       (languageFilter === '' || page.language === languageFilter)
-  )
+  );
 
   return (
     <div className="space-y-4 mt-6">
       <button
         onClick={fetchPages}
-        className="px-4 py-2 rounded bg-orange-600 text-white hover:bg-orange-700"
+        disabled={loading}
+        className={`px-4 py-2 rounded text-white transition ${
+          loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700'
+        }`}
       >
-        Fetch HubSpot Pages
+        {loading ? 'Fetching Pages...' : 'Fetch HubSpot Pages'}
       </button>
 
       <div className="flex gap-4 my-2">
@@ -80,7 +98,7 @@ export default function GetHubspotPages({
       {filteredPages.length > 0 && (
         <table className="table-auto w-full border mt-4 text-sm">
           <thead>
-            <tr className="text-left">
+            <tr className="text-left border">
               <th className="p-2 border">Name</th>
               <th className="p-2 border">Slug</th>
               <th className="p-2 border">Domain</th>
@@ -100,5 +118,5 @@ export default function GetHubspotPages({
         </table>
       )}
     </div>
-  )
+  );
 }
