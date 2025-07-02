@@ -1,105 +1,80 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Sheet Sync Hub
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+## 📝 Overview
+Sheet Sync Hub is a SaaS feature that connects Google Sheets to HubSpot content (pages, blog posts, redirects, etc.), allowing users to edit, filter, and sync settings in both directions. This project was built as a paid test to evaluate full-stack skills and may become part of a live product.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## 🎯 Features
+1. **Authentication**: Log in using Supabase Auth (email or magic link).
+2. **Google OAuth**: Connect your Google account and select a Google Sheet to sync with.
+3. **HubSpot Token**: Input your HubSpot private app token to connect to the CMS Pages API.
+4. **Fetch Published Pages**: Retrieve up to 50 published pages from HubSpot (data is kept in memory, not stored).
+5. **Filter Options**: Filter pages by language and domain, and preview the filtered list in a table.
+6. **Push to Google Sheet**: Push filtered results into a new tab in the selected Google Sheet (tab is created if missing, with headers: Name, Language, Slug, URL, Last Updated; up to 50 rows).
+7. **Store Sync Metadata**: Sync sessions are logged in Supabase with user, sheet, tab, content type, filters, and timestamp.
 
-## Features
+## 🧱 Requirements
+- Supabase Auth for authentication
+- Google OAuth for Sheets access
+- HubSpot private app token for CMS API
+- Filtering by language and domain
+- Sync to Google Sheets with tab creation and headers
+- Sync metadata stored in Supabase
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## ✨ Bonus Features
+- Toast messages for sync success/failure
+- Row count for each sync
+- UI polish with TailwindCSS
 
-## Demo
+## 💾 Tech Stack
+- **Frontend**: Next.js, React, TailwindCSS
+- **Auth**: Supabase Auth
+- **Database**: Supabase PostgreSQL
+- **APIs**: HubSpot CMS (Pages endpoint), Google Sheets API
+- **Deployment**: Vercel
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
-
-## Deploy to Vercel
-
-Vercel deployment will guide you through creating a Supabase account and project.
-
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
-
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
-
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
-
-## Clone and run locally
-
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
-
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
+## ⚙️ Setup Instructions
+1. **Clone the repository:**
    ```
-
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
+   git clone <your-repo-url>
+   cd sheet-sync-hub
    ```
-
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
+2. **Install dependencies:**
    ```
-
-3. Use `cd` to change into the app's directory
-
-   ```bash
-   cd with-supabase-app
+   npm install
+   # or
+   yarn install
    ```
-
-4. Rename `.env.example` to `.env.local` and update the following:
-
+3. **Configure environment variables:**
+   - Copy `.env.example` to `.env.local` and fill in the required secrets (Supabase, Google, HubSpot, etc).
+4. **Run the development server:**
    ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
    npm run dev
+   # or
+   yarn dev
    ```
+5. **Deploy:**
+   - Deploy to Vercel or your preferred platform.
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+## 📦 Assumptions
+- Users have valid Google and HubSpot accounts.
+- Only published HubSpot pages are fetched (up to 50).
+- No HubSpot content is stored in Supabase; only sync metadata is stored.
+- Google Sheet tab is created if missing; headers are always added for new tabs.
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+## 🛠 Implementation Notes
+- **Supabase Auth** is used for secure authentication and user management.
+- **Google OAuth** is implemented for Sheets access, with tokens stored securely in Supabase.
+- **HubSpot integration** uses the private app token to fetch CMS pages.
+- **Filtering** is performed client-side before syncing to Sheets.
+- **Sync sessions** are logged in a `sync_sessions` table for audit and tracking.
+- **UI** is built with TailwindCSS for rapid styling and responsiveness.
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+## 📁 Project Structure
+- `app/` — Next.js app routes and API endpoints
+- `components/` — Reusable React components
+- `lib/` — Utility functions and Supabase client
+- `README.md` — Project documentation
+- `.env.example` — Example environment variables
 
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+## 📄 License
+This project is for evaluation purposes and is not licensed for production use unless selected for further development.
