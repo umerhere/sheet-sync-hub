@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { UserProvider } from "@/context/UserContext";
+import { Toaster } from 'react-hot-toast';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -33,7 +35,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider>
+            <Toaster position="top-right" />
+            {children}
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

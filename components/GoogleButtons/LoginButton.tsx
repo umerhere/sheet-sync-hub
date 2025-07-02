@@ -1,34 +1,34 @@
 'use client'
 
-import { createClient } from '@supabase/supabase-js'
+// import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// const supabase = createClient(
+//   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// )
 
-export default function LoginButton() {
-  const handleLogin = async () => {
-    const token = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      // options: {
-      //   redirectTo: 'https://gdtxgpqqorllfgjlccun.supabase.co/auth/v1/callback',
-      // },
-    })
-    localStorage.setItem('umar_token_latest', JSON.stringify(token))
-    console.log("umar token", token);
-  }
+// export default function LoginButton() {
+//   const handleLogin = async () => {
+//     const token = await supabase.auth.signInWithOAuth({
+//       provider: 'google',
+//       // options: {
+//       //   redirectTo: 'https://gdtxgpqqorllfgjlccun.supabase.co/auth/v1/callback',
+//       // },
+//     })
+//     localStorage.setItem('umar_token_latest', JSON.stringify(token))
+//     console.log("umar token", token);
+//   }
 
   
-  return (
-    <button
-      onClick={handleLogin}
-      className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-    >
-      Continue with Google - SUPABASE
-    </button>
-  )
-}
+//   return (
+//     <button
+//       onClick={handleLogin}
+//       className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+//     >
+//       Continue with Google - SUPABASE
+//     </button>
+//   )
+// }
 
 const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?` +
   new URLSearchParams({

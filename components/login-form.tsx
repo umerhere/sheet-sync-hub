@@ -12,9 +12,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+// import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 
 export function LoginForm({
   className,
@@ -38,6 +39,7 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
+      toast.success('Login successful!');
       router.push("/");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -70,7 +72,7 @@ export function LoginForm({
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
@@ -78,7 +80,7 @@ export function LoginForm({
                   >
                     Forgot your password?
                   </Link>
-                </div>
+                </div> */}
                 <Input
                   id="password"
                   type="password"

@@ -1,12 +1,18 @@
-import /* LoginButton, */ LoginButton, { GoogleConnectButton } from '@/components/GoogleButtons/LoginButton';
+'use client'
+
+import { GoogleConnectButton } from '@/components/GoogleButtons/LoginButton';
 import ConnectHubSpotButton from '@/components/connect-hubspot';
 import HubspotGSheetConnector from '@/components/hubspot-gsheet-connector';
+import { useUser } from "@/context/UserContext";
 
-export default async function HomePage() {
+export default function HomePage() {
 
+  const { user } = useUser();
+  console.log("user in dashboard", user); // client log
   return (
     <div className="flex flex-col">
-      <LoginButton /><br />
+      <h1>Welcome, {user && user.full_name}</h1>
+      {/* <LoginButton /><br /> */}
       <GoogleConnectButton /><br />
       <ConnectHubSpotButton /><br />
       <HubspotGSheetConnector /><br />

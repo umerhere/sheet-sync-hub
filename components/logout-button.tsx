@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export function LogoutButton() {
   const logout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    toast.success("Logged out successfully!");
     router.push("/auth/login");
   };
 

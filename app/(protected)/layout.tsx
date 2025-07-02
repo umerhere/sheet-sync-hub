@@ -14,7 +14,8 @@ export default async function ProtectedLayout({
 }) {
    const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  // console.log("umar protected user", user); // server log
+  console.log("umar protected user", user); // server log
+
   if (!user) {
     redirect('/auth/login')
   }
