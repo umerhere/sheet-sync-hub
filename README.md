@@ -35,7 +35,7 @@ Sheet Sync Hub is a SaaS feature that connects Google Sheets to HubSpot content 
 ## ⚙️ Setup Instructions
 1. **Clone the repository:**
    ```
-   git clone <your-repo-url>
+   git clone https://github.com/umerhere/sheet-sync-hub.git
    cd sheet-sync-hub
    ```
 2. **Install dependencies:**
