@@ -16,7 +16,7 @@ export default async function ProtectedLayout({
   const { data: { user } } = await supabase.auth.getUser()
   // console.log("umar protected user", user); // server log
   if (!user) {
-    redirect('/login')
+    redirect('/auth/login')
   }
   return (
     <main className="min-h-screen flex flex-col items-center">

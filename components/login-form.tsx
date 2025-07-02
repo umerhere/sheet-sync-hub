@@ -38,8 +38,7 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      router.push("/");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -93,16 +92,37 @@ export function LoginForm({
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/sign-up"
-                className="underline underline-offset-4"
-              >
-                Sign up
-              </Link>
-            </div>
           </form>
+
+          {/* Divider */}
+          <div className="mt-6 text-center text-sm text-muted-foreground w-full">— OR —</div>
+
+          {/* Google Login Button */}
+          <div className="mt-4">
+            <Button
+              variant="outline"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              
+              onClick={async () => {
+                console.log("Will redirect to:", `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/callback`);
+                console.log("umar URL", `${window.location.origin}/api/supabase`);
+                const supabase = createClient();
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                  provider: "google",
+                  options: {
+                    //  redirectTo: undefined, // optional, just for clarity
+    // skipBrowserRedirect: true, // 👈 prevents auto-redirect
+    // redirectTo: `${window.location.origin}/auth/callback`, // this is YOUR route
+  }
+                });
+console.log("umar auth data", data);
+console.log("umar auth error", error);
+console.log("OAuth Redirect URL:", data?.url);
+              }}
+            >
+              Continue with Google
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
