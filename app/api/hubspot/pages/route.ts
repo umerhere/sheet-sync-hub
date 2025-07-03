@@ -61,7 +61,7 @@ export async function GET (req: NextRequest) {
           )
         })
 
-        return published.map(p => ({ ...p, _sourceType: type }))
+        return published.map((p: any) => ({ ...p, _sourceType: type }))
       })
     )
 

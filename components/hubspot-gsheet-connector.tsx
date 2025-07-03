@@ -5,7 +5,7 @@ import GetHubspotPages from '@/components/get-hubspot-pages'
 import GetAllSheetsButton from '@/components/get-all-sheets'
 
 export default function HubspotGSheetConnector() {
-  const [pages, setPages] = useState([])
+  const [pages, setPages] = useState<any[]>([]);
   const [domainFilter, setDomainFilter] = useState('')
   const [languageFilter, setLanguageFilter] = useState('')
 
