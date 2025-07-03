@@ -106,8 +106,6 @@ export function LoginForm({
               className="w-full text-white bg-blue-600 hover:bg-blue-700"
               
               onClick={async () => {
-                console.log("Will redirect to:", `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/callback`);
-                console.log("umar URL", `${window.location.origin}/api/supabase`);
                 const supabase = createClient();
                 const { data, error } = await supabase.auth.signInWithOAuth({
                   provider: "google",
@@ -117,9 +115,6 @@ export function LoginForm({
     // redirectTo: `${window.location.origin}/auth/callback`, // this is YOUR route
   }
                 });
-console.log("umar auth data", data);
-console.log("umar auth error", error);
-console.log("OAuth Redirect URL:", data?.url);
               }}
             >
               Continue with Google

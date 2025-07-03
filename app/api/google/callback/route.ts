@@ -42,7 +42,6 @@ export async function GET (req: NextRequest) {
     })
 
     const tokenData = await tokenRes.json()
-    console.log('🔑 Google token response:', tokenData)
 
     if (!tokenData.access_token) {
       return NextResponse.json(

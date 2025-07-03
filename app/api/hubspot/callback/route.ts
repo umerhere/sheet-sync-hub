@@ -42,9 +42,6 @@ export async function GET (req: NextRequest) {
 
     const tokenData = await tokenRes.json()
 
-    // 🧪 Add logging here
-    console.log('HubSpot token response:', tokenData)
-
     if (!tokenData.access_token || !tokenData.refresh_token) {
       return NextResponse.json(
         { error: 'HubSpot token request failed', details: tokenData },

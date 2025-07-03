@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { formatReadableDate, getContentTypesSummary } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET () {
@@ -11,8 +12,6 @@ export async function GET () {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  console.log('🔎 Current user email:', user.email)
-
   const { data: tokenRow, error } = await supabase
     .from('google_tokens')
     .select('access_token')
@@ -21,8 +20,6 @@ export async function GET () {
     .limit(1)
     .maybeSingle()
 
-  console.log('data from google_tokens', tokenRow)
-  console.log('error from google_tokens', error)
   if (error || !tokenRow) {
     return NextResponse.json(
       { error: 'No Google token found' },
@@ -73,7 +70,7 @@ export async function POST (req: NextRequest) {
   }
 
   const token = tokenRow.access_token
-  const sheetName = `Import_${new Date().toISOString().slice(0, 10)}`
+  const sheetName = `HubSpotPages_${new Date().toISOString().slice(0, 10)}`
 
   // 🔍 Step 1: Get existing sheets to see if this tab already exists
   const metadataRes = await fetch(
@@ -114,31 +111,35 @@ export async function POST (req: NextRequest) {
 
   // ✅ Step 3: Format data
   const headers: string[] = [
-    'ID',
-    'Title',
-    'Slug',
+    'Name',
     'Language',
-    'Domain',
+    'Slug',
+    'Content Type',
+    'URL',
+    'Published Date',
     'Last Updated'
   ]
+
   interface Page {
-    id: string
     name: string
-    slug: string
     language: string
-    domain: string
+    slug: string
+    content: string
+    url: string
     updatedAt: string
+    publishedAt: string
   }
 
   const values: string[][] = [
     ...(tabExists ? [] : [headers]), // only add headers if tab is new
     ...pages.map((p: Page) => [
-      p.id,
       p.name,
-      p.slug,
       p.language,
-      p.domain,
-      p.updatedAt
+      p.slug,
+      p.content,
+      p.url,
+      formatReadableDate(p.publishedAt),
+      formatReadableDate(p.updatedAt)
     ])
   ]
 
@@ -158,6 +159,9 @@ export async function POST (req: NextRequest) {
   )
 
   const updateData = await updateRes.json()
+  if (updateData.error) {
+    return NextResponse.json({ success: false, updateData })
+  }
 
   // ✅ Step 5: Store sync session in Supabase
   const { error: syncError } = await supabase.from('sync_sessions').insert([
@@ -165,11 +169,12 @@ export async function POST (req: NextRequest) {
       user_id: user.id,
       sheet_id: sheetId,
       tab_name: sheetName,
-      content_type: 'pages',
+      content_type: getContentTypesSummary(pages),
       filters_used: JSON.stringify({
         domain: domainFilter,
         language: languageFilter
       }),
+      rows_added: pages.length,
       timestamp: new Date().toISOString()
     }
   ])

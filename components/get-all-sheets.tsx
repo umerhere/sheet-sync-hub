@@ -23,23 +23,17 @@ export default function GetAllSheetsButton({
       (page.domain === domainFilter || domainFilter === '') &&
       (page.language === languageFilter || languageFilter === '')
   )
-
-  console.log("umar filteredPages", filteredPages);
-  console.log("umar domainFilter", domainFilter);
-  console.log("umar lanugageFilter", languageFilter);
   const getSheets = async () => {
     try {
       setLoadingSheets(true);
       const res = await fetch('/api/google/sheets')
       const data = await res.json()
-      console.log("umar data from sheets", data);
       if (data.error && data.error.code == 401) {
         toast.error('Please connect your google account again')
       setLoadingSheets(false);
         return;
       }
       if (res.ok) {
-        console.log('✅ Google Sheets:', data.files)
         setSheets(data.files || [])
       } else {
         console.error('❌ Error:', data.error)
@@ -67,26 +61,27 @@ export default function GetAllSheetsButton({
       })
     
     })
-   const data = await res.json()
-    console.log('✅ Import Response:', data)
-    if (data.updateData.error) {
-      if (data.updateData.error.code === 403) {
-        toast.error('You do not have permission to write to this sheet')
-      } else if (data.updateData.error.code === 404) {
-        toast.error('Sheet not found or you do not have access')
-      } else if (data.updateData.error.code === 400) {
-        toast.error('Invalid request. Please check the sheet ID and try again')
-      } else {
-        toast.error(`Error importing data: ${data.updateData.error.message}`)
+    const data = await res.json()
+      if (data.updateData.error) {
+        if (data.updateData.error.code === 403) {
+          toast.error('You do not have permission to write to this sheet')
+        } else if (data.updateData.error.code === 404) {
+          toast.error('Sheet not found or you do not have access')
+        } else if (data.updateData.error.code === 400) {
+          toast.error('Invalid request. Please check the sheet ID and try again')
+        }  else if (data.updateData.error.code === 401) {
+          toast.error('Please connect your google account and try again')
+        } else {
+          toast.error(`Error importing data: ${data.updateData.error.message}`)
+        }
+        setLoadingImports(false)
+        return
       }
-      setLoadingImports(false)
-      return
+      if (res.ok && !data.updateData.error) {
+        toast.success('Successfully imported data from Google Sheet')
+        setSelectedSheetId('')
+      }  
     }
-    if (res.ok && !data.updateData.error) {
-      toast.success('Successfully imported data from Google Sheet')
-      setSelectedSheetId('')
-    }  
-  }
     catch (error) {
       toast.error('Failed to import data from Google Sheet')
       console.error('❌ Import Error:', error)
@@ -105,7 +100,7 @@ export default function GetAllSheetsButton({
         onClick={getSheets}
         className={`px-4 py-2 rounded  text-white ${!loadingSheets ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600' } `}
       >
-        {loadingSheets ? "Loading Sheets..." : "Get All Google Sheets"}
+        {loadingSheets ? "Loading Sheets..." : "Fetch Connected Sheets"}
       </button>
 
       {sheets.length > 0 && (
@@ -115,7 +110,7 @@ export default function GetAllSheetsButton({
             value={selectedSheetId}
             onChange={(e) => setSelectedSheetId(e.target.value)}
           >
-            <option value="">-- Select Sheet to import data --</option>
+            <option value="">-- Choose a Sheet to Sync Data --</option>
             {sheets.map((sheet) => (
               <option key={sheet.id} value={sheet.id}>
                 {sheet.name}
@@ -126,9 +121,9 @@ export default function GetAllSheetsButton({
           {pages.length > 0 && selectedSheetId && (
             <button
               onClick={handleImport}
-              className={`px-4 py-2 rounded text-white ${!loadingImports ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-600' }`}
+              className={`px-4 py-2 rounded text-white ${!loadingImports ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-600' }`}
             >
-              {loadingImports ? "Please wait..." : "Import Selected Sheet"}
+              {loadingImports ? "Please wait..." : "Sync Filtered Pages to Selected Sheet"}
               
             </button>
           )}

@@ -29,12 +29,9 @@ export default function ConnectHubSpotButton() {
       body: JSON.stringify({ token }),
     })
 
-    const data = await res.json()
-    console.log('umar saving token', data)
-
     if (res.ok) {
       toast.success(' Token saved successfully!')
-      setInitialToken(token) // ✅ Reset initial to new value
+      setInitialToken(token)
       setSubmitted(true)
     } else {
       toast.error('Failed to save token. Please try again.')

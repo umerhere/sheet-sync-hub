@@ -1,5 +1,6 @@
 'use client';
 
+import { getLanguageFullName } from '@/lib/utils';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -26,16 +27,21 @@ export default function GetHubspotPages({
       setPages([]); // Clear previous pages
       const res = await fetch('/api/hubspot/pages');
       const data = await res.json();
-      console.log("hubspot pages data", res);
       if (res.ok) {
-        const enrichedPages = (data.pages || []).map((page: any) => ({
-          id: page.id,
-          name: page.name || '',
-          slug: page.slug || '',
-          url: page.url || '',
-          domain: page.url ? new URL(page.url).hostname : '',
-          language: page.language || '',
-        }));
+        const enrichedPages = (data.pages || []).map((page: any) => {
+        const updated = page.updatedAt ?? page.updated ?? ''
+          return {
+            id: page.id,
+            publishedAt: page.publishDate || '',
+            name: page.name || '',
+            slug: page.slug || '',
+            url: page.url || '',
+            domain: page.url ? new URL(page.url).hostname : '',
+            language: getLanguageFullName(page.language) || '',
+            updatedAt: updated,
+            content: page._sourceType || ''
+          }
+        })
         setPages(enrichedPages);
         toast.success('Fetched HubSpot pages successfully');
       } else {
@@ -119,9 +125,11 @@ export default function GetHubspotPages({
           </tbody>
         </table>
       )}
+      {filteredPages && filteredPages.length > 1 && 
       <div className="mt-2 text-right text-xs text-muted-foreground">
             Total records: {filteredPages.length}
           </div>
+      }
     </div>
   );
 }
