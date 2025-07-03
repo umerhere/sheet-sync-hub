@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import GetHubspotPages from '@/components/get-hubspot-pages'
-import GetAllSheetsButton from '@/components/get-all-sheets'
+
+import { useState } from 'react';
+import GetHubspotPages, { HubspotPage } from '@/components/get-hubspot-pages';
+import GetAllSheetsButton from '@/components/get-all-sheets';
 
 export default function HubspotGSheetConnector() {
-  const [pages, setPages] = useState<any[]>([]);
-  const [domainFilter, setDomainFilter] = useState('')
-  const [languageFilter, setLanguageFilter] = useState('')
+  const [pages, setPages] = useState<HubspotPage[]>([]);
+  const [domainFilter, setDomainFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
 
   return (
     <div className="p-4 space-y-8">

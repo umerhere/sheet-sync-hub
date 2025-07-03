@@ -3,15 +3,19 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
+import type { HubspotPage } from './get-hubspot-pages';
+
+interface GetAllSheetsButtonProps {
+  pages: HubspotPage[];
+  domainFilter: string;
+  languageFilter: string;
+}
+
 export default function GetAllSheetsButton({
   pages,
   domainFilter,
   languageFilter
-}: {
-  pages: any[]
-  domainFilter: string
-  languageFilter: string
-}) {
+}: GetAllSheetsButtonProps) {
   const [sheets, setSheets] = useState<{ id: string; name: string }[]>([])
   const [selectedSheetId, setSelectedSheetId] = useState('')
   const [loadingSheets, setLoadingSheets] = useState(false)
@@ -22,7 +26,7 @@ export default function GetAllSheetsButton({
     (page) =>
       (page.domain === domainFilter || domainFilter === '') &&
       (page.language === languageFilter || languageFilter === '')
-  )
+  );
   const getSheets = async () => {
     try {
       setLoadingSheets(true);

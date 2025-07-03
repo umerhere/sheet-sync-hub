@@ -1,8 +1,31 @@
 'use client';
 
 import { getLanguageFullName } from '@/lib/utils';
+import { HubspotPageT } from '@/types/hubspot';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+
+export interface HubspotPage {
+  id: string;
+  publishedAt: string;
+  authorName: string;
+  name: string;
+  slug: string;
+  url: string;
+  domain: string;
+  language: string;
+  updatedAt: string;
+  content: string;
+}
+
+interface GetHubspotPagesProps {
+  pages: HubspotPage[];
+  setPages: (pages: HubspotPage[]) => void;
+  domainFilter: string;
+  setDomainFilter: (val: string) => void;
+  languageFilter: string;
+  setLanguageFilter: (val: string) => void;
+}
 
 export default function GetHubspotPages({
   pages,
@@ -11,14 +34,7 @@ export default function GetHubspotPages({
   setDomainFilter,
   languageFilter,
   setLanguageFilter,
-}: {
-  pages: any[];
-  setPages: (pages: any[]) => void;
-  domainFilter: string;
-  setDomainFilter: (val: string) => void;
-  languageFilter: string;
-  setLanguageFilter: (val: string) => void;
-}) {
+}: GetHubspotPagesProps) {
   const [loading, setLoading] = useState(false);
 
   const fetchPages = async () => {
@@ -28,8 +44,8 @@ export default function GetHubspotPages({
       const res = await fetch('/api/hubspot/pages');
       const data = await res.json();
       if (res.ok) {
-        const enrichedPages = (data.pages || []).map((page: any) => {
-        const updated = page.updatedAt ?? page.updated ?? ''
+        const enrichedPages: HubspotPage[] = (data.pages || []).map((page: HubspotPageT): HubspotPage => {
+          const updated = page.updatedAt ?? page.updated ?? '';
           return {
             id: page.id,
             publishedAt: page.publishDate || '',
@@ -38,11 +54,11 @@ export default function GetHubspotPages({
             slug: page.slug || '',
             url: page.url || '',
             domain: page.url ? new URL(page.url).hostname : '',
-            language: getLanguageFullName(page.language) || '',
+            language: getLanguageFullName(page.language ?? '') || '',
             updatedAt: updated,
-            content: page._sourceType || ''
-          }
-        })
+            content: page._sourceType || '',
+          };
+        });
         setPages(enrichedPages);
         toast.success('Fetched HubSpot pages successfully');
       } else {
@@ -115,7 +131,7 @@ export default function GetHubspotPages({
             </tr>
           </thead>
           <tbody>
-            {filteredPages.map((page: any) => (
+            {filteredPages.map((page) => (
               <tr key={page.id}>
                 <td className="p-2 border">{page.name || '—'}</td>
                 <td className="p-2 border">{page.slug || page.url || '—'}</td>

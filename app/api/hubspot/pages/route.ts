@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { HubspotPageT } from '@/types/hubspot'
 import { NextRequest, NextResponse } from 'next/server'
 
 const pageTypes = [
@@ -52,7 +53,7 @@ export async function GET (req: NextRequest) {
           }
         }
 
-        const published = (data.results || []).filter((page: any) => {
+        const published = (data.results || []).filter((page: HubspotPageT) => {
           return (
             page.currentState === 'PUBLISHED' ||
             page.state === 'PUBLISHED' ||
@@ -61,12 +62,13 @@ export async function GET (req: NextRequest) {
           )
         })
 
-        return published.map((p: any) => ({ ...p, _sourceType: type }))
+        return published.map((p: HubspotPageT) => ({ ...p, _sourceType: type }))
       })
     )
 
     const mergedPages = allPages.flat()
     return NextResponse.json({ pages: mergedPages })
+    // @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('❌ HubSpot fetch error:', error)
 
