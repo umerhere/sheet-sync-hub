@@ -40,3 +40,6 @@ export function getContentTypesSummary (pages: { content?: string }[]): string {
   const types = Array.from(new Set(pages.map(p => p.content).filter(Boolean)))
   return types.join(', ')
 }
+
+const isLocalhost =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'

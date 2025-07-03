@@ -4,10 +4,8 @@ const isLocalhost = typeof window !== 'undefined' && window.location.hostname ==
 const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?` +
   new URLSearchParams({
     client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-    redirect_uri: isLocalhost
-      ? 'http://localhost:3000/api/google/callback'
-      : 'https://sheet-sync-hub-app.vercel.app/api/google/callback',
-      
+    // redirect_uri: 'http://localhost:3000/api/google/callback',
+    redirect_uri: `${window.location.origin}/api/google/callback`,
     response_type: 'code',
     access_type: 'offline',
     prompt: 'consent',

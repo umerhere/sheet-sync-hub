@@ -36,7 +36,8 @@ export async function GET (req: NextRequest) {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: 'http://localhost:3000/api/google/callback',
+        // redirect_uri: 'http://localhost:3000/api/google/callback',
+        redirect_uri: new URL('/api/google/callback', req.url).toString(),
         grant_type: 'authorization_code'
       })
     })
