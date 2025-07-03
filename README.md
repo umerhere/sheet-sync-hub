@@ -12,18 +12,20 @@ Sheet Sync Hub is a SaaS feature that connects Google Sheets to HubSpot content 
 6. **Push to Google Sheet**: Push filtered results into a new tab in the selected Google Sheet (tab is created if missing, with headers: Name, Language, Slug, URL, Last Updated; up to 50 rows).
 7. **Store Sync Metadata**: Sync sessions are logged in Supabase with user, sheet, tab, content type, filters, and timestamp.
 
-## 🧱 Requirements
-- Supabase Auth for authentication
-- Google OAuth for Sheets access
-- HubSpot private app token for CMS API
-- Filtering by language and domain
-- Sync to Google Sheets with tab creation and headers
-- Sync metadata stored in Supabase
-
-## ✨ Bonus Features
-- Toast messages for sync success/failure
-- Row count for each sync
-- UI polish with TailwindCSS
+## 🔐 Auth Configuration
+- Uses **Supabase Auth** for session handling, with:
+  - Email/password login
+  - Magic link login via email
+- Supabase's built-in **SMTP sender** (e.g. `noreply@supabase.dev`) is used to send magic links.
+- Magic link redirects are handled using:
+  - `emailRedirectTo`: `http://localhost:3000/auth/callback`
+  - Supabase Auth Dashboard → **Site URL**: `http://localhost:3000`
+  - Supabase Auth Dashboard → **Redirect URLs**:
+    ```
+    http://localhost:3000/
+    http://localhost:3000/auth/callback
+    http://localhost:3000/auth/login
+    ```
 
 ## 💾 Tech Stack
 - **Frontend**: Next.js, React, TailwindCSS
@@ -53,7 +55,7 @@ Sheet Sync Hub is a SaaS feature that connects Google Sheets to HubSpot content 
    yarn dev
    ```
 5. **Deploy:**
-   - Deploy to Vercel or your preferred platform.
+   - Deployed to Vercel 
 
 ## 📦 Assumptions
 - Users have valid Google and HubSpot accounts.
