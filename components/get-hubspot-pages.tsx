@@ -33,6 +33,7 @@ export default function GetHubspotPages({
           return {
             id: page.id,
             publishedAt: page.publishDate || '',
+            authorName: page.authorName || '',
             name: page.name || '',
             slug: page.slug || '',
             url: page.url || '',
