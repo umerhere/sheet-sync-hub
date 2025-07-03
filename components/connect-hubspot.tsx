@@ -60,11 +60,6 @@ export default function ConnectHubSpotButton() {
         Save Token
       </button>
 
-      {/* {submitted && (
-        <p className='text-green-600'>
-          ✅ Token saved! Ready to fetch HubSpot pages.
-        </p>
-      )} */}
     </div>
   )
 }
