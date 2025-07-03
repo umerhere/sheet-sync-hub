@@ -27,6 +27,10 @@ export async function GET (req: NextRequest) {
 
   // ✅ Exchange code for tokens
   try {
+    console.log(
+      'umar google>callbacl>get process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID',
+      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+    )
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
