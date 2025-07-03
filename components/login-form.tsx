@@ -12,10 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 export function LoginForm({
   className,
@@ -27,7 +26,7 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLoginWithEmailPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
@@ -48,78 +47,94 @@ export function LoginForm({
     }
   };
 
+  const handleMagicLinkLogin = async () => {
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
+
+    if (!email) {
+      setError("Please enter your email first");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: 'http://localhost:3000/auth/callback',
+        },
+      });
+      if (error) throw error;
+      toast.success("Magic link sent! Check your email.");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 max-w-md mx-auto", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-4xl text-center">Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Use your email and password or a magic link to sign in.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                {/* <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div> */}
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
+          <form onSubmit={handleLoginWithEmailPassword} className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login with Password"}
+            </Button>
           </form>
 
-          {/* Divider */}
-          <div className="mt-6 text-center text-sm text-muted-foreground w-full">— OR —</div>
-
-          {/* Google Login Button */}
-          <div className="mt-4">
-            <Button
-              variant="outline"
-              className="w-full text-white bg-blue-600 hover:bg-blue-700"
-              
-              onClick={async () => {
-                const supabase = createClient();
-                const { data, error } = await supabase.auth.signInWithOAuth({
-                  provider: "google",
-                  options: {
-                     redirectTo: 'http://localhost:3000', // optional, just for clarity
-    // skipBrowserRedirect: true, // 👈 prevents auto-redirect
-    // redirectTo: `${window.location.origin}/auth/callback`, // this is YOUR route
-  }
-                });
-              }}
-            >
-              Continue with Google
-            </Button>
+          {/* Divider with label */}
+          <div className="my-6 relative text-center">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <span className="relative px-2 text-sm text-muted-foreground">
+              OR
+            </span>
           </div>
+
+          {/* Magic link button */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleMagicLinkLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? "Sending..." : "Login via Magic Link"}
+          </Button>
         </CardContent>
       </Card>
     </div>
