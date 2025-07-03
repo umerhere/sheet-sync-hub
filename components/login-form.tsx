@@ -103,7 +103,7 @@ export function LoginForm({
           <div className="mt-4">
             <Button
               variant="outline"
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full text-white bg-blue-600 hover:bg-blue-700"
               
               onClick={async () => {
                 console.log("Will redirect to:", `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/callback`);
@@ -112,7 +112,7 @@ export function LoginForm({
                 const { data, error } = await supabase.auth.signInWithOAuth({
                   provider: "google",
                   options: {
-                    //  redirectTo: undefined, // optional, just for clarity
+                     redirectTo: 'http://localhost:3000', // optional, just for clarity
     // skipBrowserRedirect: true, // 👈 prevents auto-redirect
     // redirectTo: `${window.location.origin}/auth/callback`, // this is YOUR route
   }

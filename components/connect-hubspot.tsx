@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 export default function ConnectHubSpotButton() {
   const [token, setToken] = useState('')
@@ -32,10 +33,11 @@ export default function ConnectHubSpotButton() {
     console.log('umar saving token', data)
 
     if (res.ok) {
+      toast.success(' Token saved successfully!')
       setInitialToken(token) // ✅ Reset initial to new value
       setSubmitted(true)
     } else {
-      alert('❌ Failed to save token: ' + data.error)
+      toast.error('Failed to save token. Please try again.')
     }
   }
 
@@ -61,11 +63,11 @@ export default function ConnectHubSpotButton() {
         Save Token
       </button>
 
-      {submitted && (
+      {/* {submitted && (
         <p className='text-green-600'>
           ✅ Token saved! Ready to fetch HubSpot pages.
         </p>
-      )}
+      )} */}
     </div>
   )
 }

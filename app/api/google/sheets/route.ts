@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { randomUUID } from 'crypto'
 
-export async function GET (req: NextRequest) {
+export async function GET () {
   const supabase = await createClient()
   const {
     data: { user }
@@ -85,8 +84,9 @@ export async function POST (req: NextRequest) {
   )
 
   const metadata = await metadataRes.json()
+  type Sheet = { properties: { title: string } }
   const tabExists = metadata.sheets?.some(
-    (sheet: any) => sheet.properties.title === sheetName
+    (sheet: Sheet) => sheet.properties.title === sheetName
   )
 
   // 🧩 Step 2: If tab doesn't exist, create it
@@ -113,10 +113,33 @@ export async function POST (req: NextRequest) {
   }
 
   // ✅ Step 3: Format data
-  const headers = ['ID', 'Title', 'Slug', 'Language', 'Domain']
-  const values = [
+  const headers: string[] = [
+    'ID',
+    'Title',
+    'Slug',
+    'Language',
+    'Domain',
+    'Last Updated'
+  ]
+  interface Page {
+    id: string
+    name: string
+    slug: string
+    language: string
+    domain: string
+    updatedAt: string
+  }
+
+  const values: string[][] = [
     ...(tabExists ? [] : [headers]), // only add headers if tab is new
-    ...pages.map(p => [p.id, p.name, p.slug, p.language, p.domain])
+    ...pages.map((p: Page) => [
+      p.id,
+      p.name,
+      p.slug,
+      p.language,
+      p.domain,
+      p.updatedAt
+    ])
   ]
 
   // 📝 Step 4: Write to the sheet tab

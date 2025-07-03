@@ -23,9 +23,10 @@ export default function GetHubspotPages({
   const fetchPages = async () => {
     try {
       setLoading(true);
+      setPages([]); // Clear previous pages
       const res = await fetch('/api/hubspot/pages');
       const data = await res.json();
-
+      console.log("hubspot pages data", res);
       if (res.ok) {
         const enrichedPages = (data.pages || []).map((page: any) => ({
           id: page.id,
@@ -36,12 +37,13 @@ export default function GetHubspotPages({
           language: page.language || '',
         }));
         setPages(enrichedPages);
-        toast.success('✅ Fetched HubSpot pages successfully');
+        toast.success('Fetched HubSpot pages successfully');
       } else {
         console.error('❌ Error:', data.error || data.details);
         toast.error(data.error || 'Failed to fetch pages');
       }
     } catch (err) {
+      alert('err')
       console.error('❌ Unexpected Error:', err);
       toast.error('Unexpected error occurred');
     } finally {
@@ -117,6 +119,9 @@ export default function GetHubspotPages({
           </tbody>
         </table>
       )}
+      <div className="mt-2 text-right text-xs text-muted-foreground">
+            Total records: {filteredPages.length}
+          </div>
     </div>
   );
 }

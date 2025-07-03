@@ -1,15 +1,6 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-export async function middleware (req: NextRequest) {
-  const res = NextResponse.next()
-
-  const supabase = createMiddlewareClient({ req, res })
-  await supabase.auth.getSession() // ⬅️ attaches session to request
-
-  return res
-}
+export const middleware = updateSession
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
