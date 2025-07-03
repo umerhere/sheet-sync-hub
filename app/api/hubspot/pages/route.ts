@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { HubspotPageT } from '@/types/hubspot'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 const pageTypes = [
   { type: 'site-page', url: 'https://api.hubapi.com/cms/v3/pages/site-pages' },
@@ -11,7 +11,7 @@ const pageTypes = [
   { type: 'blog-post', url: 'https://api.hubapi.com/cms/v3/blogs/posts' }
 ]
 
-export async function GET (req: NextRequest) {
+export async function GET () {
   const supabase = await createClient()
 
   const {
@@ -68,7 +68,7 @@ export async function GET (req: NextRequest) {
 
     const mergedPages = allPages.flat()
     return NextResponse.json({ pages: mergedPages })
-    // @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('❌ HubSpot fetch error:', error)
 

@@ -7,7 +7,7 @@ export default function ConnectHubSpotButton() {
   const [token, setToken] = useState('')
   const [initialToken, setInitialToken] = useState('')
   const [submitted, setSubmitted] = useState(false)
-
+  console.log(submitted);
   useEffect(() => {
     const fetchToken = async () => {
       const res = await fetch('/api/hubspot/token', { method: 'GET' })
