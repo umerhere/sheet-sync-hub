@@ -1,5 +1,4 @@
 'use client'
-const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
 
 const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?` +
   new URLSearchParams({
