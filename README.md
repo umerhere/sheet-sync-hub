@@ -18,13 +18,13 @@ Sheet Sync Hub is a SaaS feature that connects Google Sheets to HubSpot content 
   - Magic link login via email
 - Supabase's built-in **SMTP sender** (e.g. `noreply@supabase.dev`) is used to send magic links.
 - Magic link redirects are handled using:
-  - `emailRedirectTo`: `http://localhost:3000/auth/callback`
-  - Supabase Auth Dashboard → **Site URL**: `http://localhost:3000`
+  - `emailRedirectTo`: `https://sheet-sync-hub-app.vercel.app/auth/callback`
+  - Supabase Auth Dashboard → **Site URL**: `https://sheet-sync-hub-app.vercel.app`
   - Supabase Auth Dashboard → **Redirect URLs**:
     ```
-    http://localhost:3000/
-    http://localhost:3000/auth/callback
-    http://localhost:3000/auth/login
+    https://sheet-sync-hub-app.vercel.app
+    https://sheet-sync-hub-app.vercel.app/auth/callback
+    https://sheet-sync-hub-app.vercel.app/auth/login
     ```
 
 ## 💾 Tech Stack
