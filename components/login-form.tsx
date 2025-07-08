@@ -82,6 +82,7 @@ export function LoginForm({
           <CardTitle className="text-4xl text-center">Login</CardTitle>
           <CardDescription>
             Use your email and password or a magic link to sign in.
+            TEST
           </CardDescription>
         </CardHeader>
         <CardContent>
